@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  php:
+    image: "php:8-apache"
+    ports: 
+      - 80:80
+    volumes: 
+      - ./src:/var/www/html
+      - ./src/php.ini:/usr/local/etc/php/conf.d/custom.ini:ro
+    depends_on: 
+      - db
+    restart: "unless-stopped"
+
+  db: 
+    image: "mariadb"
+    volumes: 
+      - ./data:/var/lib/mysql
+    restart: "unless-stopped"
+    environment: 
+      MYSQL_ROOT_PASSWORD: "root_password"
+      MYSQL_DATABASE: "${DB_NAME}"
+      MYSQL_USER: "${DB_USER}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+
+  phpmyadmin:
+    image: "phpmyadmin"
+    environment: 
+      PMA_HOST: "db"
+      PMA_USER: "${DB_USER}"
+      PMA_PASSWORD: "${DB_PASSWORD}"
+    ports:
+      - 8080:80
+    restart: "unless-stopped"
